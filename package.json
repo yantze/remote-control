@@ -1,0 +1,48 @@
+{
+  "name": "electron-quick-start-typescript",
+  "version": "1.0.0",
+  "description": "A minimal Electron application written with Typescript",
+  "scripts": {
+    "dev": "electron-webpack dev",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "npm run build && electron ./dist/main.js",
+    "compile": "electron-webpack",
+    "dist": "npm run compile && electron-builder",
+    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "repository": "https://github.com/electron/electron-quick-start-typescript",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo",
+    "typescript"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "babel-loader": "^8.0.0",
+    "css-loader": "^1.0.0",
+    "electron": "^2.0.8",
+    "electron-builder": "^20.28.3",
+    "electron-webpack": "^2.3.1",
+    "ts-loader": "^4.5.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2",
+    "vue": "^2.5.17",
+    "vue-loader": "^15.4.1",
+    "vue-template-compiler": "^2.5.17",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.9"
+  },
+  "electronWebpack": {
+    "commonSourceDirectory": "src/common",
+    "renderer": {
+      "webpackConfig": "custom.webpack.additions.js"
+    }
+  }
+}
