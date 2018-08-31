@@ -1,7 +1,7 @@
 {
   "name": "electron-quick-start-typescript",
   "version": "1.0.0",
-  "description": "A minimal Electron application written with Typescript",
+  "description": "",
   "scripts": {
     "dev": "electron-webpack dev",
     "lint": "tslint -c tslint.json -p tsconfig.json",
@@ -10,7 +10,7 @@
     "dist": "npm run compile && electron-builder",
     "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
   },
-  "repository": "https://github.com/electron/electron-quick-start-typescript",
+  "repository": "https://github.com/yantze/remote-control",
   "keywords": [
     "Electron",
     "quick",
@@ -20,7 +20,7 @@
     "typescript"
   ],
   "author": "GitHub",
-  "license": "CC0-1.0",
+  "license": "private",
   "devDependencies": {
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
