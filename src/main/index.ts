@@ -4,7 +4,9 @@ import { format as formatUrl } from 'url'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-app.commandLine.appendSwitch('remote-debugging-port', '9223')
+if (isDevelopment) {
+  app.commandLine.appendSwitch('remote-debugging-port', '9223')
+}
 
 let mainWindow: Electron.BrowserWindow | null
 
@@ -14,6 +16,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 460, // titlebar height 24px
     height: 385,
+    resizable: false,
   });
 
 

@@ -25,6 +25,9 @@
             v-for="(qrimg, $index) in qrimgs"
             :key="$index" />
       </div>
+      <ul id="url-list">
+        <li class="url-text" v-for="(url, key) in supportAddress" :key="key">{{url}}</li>
+      </ul>
       <button id="server-stop-button" class="button" @click="stopServer">停止</button>
     </div>
 
@@ -38,7 +41,7 @@
 import { networkInterfaces, hostname } from "os";
 
 // import fsp from "fs-extra-promise";
-import { ChildProcess } from "child_process";
+// import { ChildProcess } from "child_process";
 import Vue from "vue";
 
 // import QRCode from "qrcode";
@@ -58,13 +61,14 @@ const SERVER_STATUS = {
   STARTED: "started"
 };
 
-let sp: ChildProcess | null;
+// let sp: ChildProcess | null;
 
 export default Vue.extend({
   data: function() {
     return {
       showConsole: false,
       serverStatus: SERVER_STATUS.STOPED,
+      supportAddress: <string[]>[],
       qrimgs: []
     };
   },
@@ -93,8 +97,9 @@ export default Vue.extend({
       // });
     },
     stopServer() {
-      sp && sp.kill();
+      // sp && sp.kill();
       console.log("stopping...");
+      this.serverStatus = SERVER_STATUS.STOPED;
     },
     startServer() {
       if (this.serverStatus !== SERVER_STATUS.STARTED) {
@@ -118,10 +123,14 @@ export default Vue.extend({
         });
       });
 
+      if (supportAddress.length > 2) {
+        supportAddress.splice(0, supportAddress.length - 2);
+      }
       supportAddress.push(hostname());
 
-      let addrGens: Promise<any>[] = supportAddress.reverse().map(address => {
+      const addrGens: Promise<any>[] = supportAddress.reverse().map(address => {
         const url = `http://${address}:4000/`;
+        this.supportAddress.push(url);
 
         let options: QRCodeToDataURLOptions = {
           // width: 200,
@@ -146,6 +155,10 @@ export default Vue.extend({
 html {
   background-color: #ececec;
   -webkit-font-smoothing: antialiased;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, PingFang SC,
+    Lantinghei SC, -apple-system, Microsoft Yahei, Hiragino Sans GB,
+    Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
+  font-size: 16px;
 }
 
 .flex-center {
@@ -204,7 +217,7 @@ html {
     width: 120px;
     height: 120px;
     display: inline-block;
-    padding: 40px;
+    padding: 0 10px 0 10px;
   }
 
   #title {
@@ -250,10 +263,20 @@ html {
     align-items: center;
 
     #qrcode-description {
-      margin-top: 30px;
+      margin-top: 20px;
+      margin-bottom: 20px;
     }
 
     #server-stop-button {
+    }
+
+    #url-list {
+      font-size: 14px;
+      color: #696969;
+
+      .url-text {
+        padding-bottom: 5px;
+      }
     }
   }
 }
