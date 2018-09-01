@@ -4,14 +4,16 @@ import { format as formatUrl } from 'url'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+app.commandLine.appendSwitch('remote-debugging-port', '9223')
+
 let mainWindow: Electron.BrowserWindow | null
 
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    width: 460, // titlebar height 24px
+    height: 385,
   });
 
 

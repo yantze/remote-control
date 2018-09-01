@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="238px" height="27px" viewBox="0 0 238 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>Remote Control</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Electron" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="SFProDisplay-Bold, SF Pro Display" font-size="36" font-weight="bold">
+        <text id="Remote-Control" fill="#363535">
+            <tspan x="-1.64746094" y="26">Remote </tspan>
+            <tspan x="132.543945" y="26" font-family="SFProDisplay-Light, SF Pro Display" font-weight="300">Control</tspan>
+        </text>
+    </g>
+</svg>

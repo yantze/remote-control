@@ -1,0 +1,42 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    // https://github.com/electron-userland/electron-webpack/issues/80
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Electron: Launch and Debug",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron-webpack",
+            "runtimeArgs": [
+                "dev"
+            ],
+            "autoAttachChildProcesses": true,
+            "internalConsoleOptions": "openOnFirstSessionStart",
+            // "internalConsoleOptions": "openOnSessionStart",
+            "console": "integratedTerminal"
+        },
+        {
+            // add below code to src/renderer/index.ts
+            // app.commandLine.appendSwitch('remote-debugging-port', '9223')
+            "name": "Electron: Renderer",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9223,
+            "webRoot": "${workspaceRoot}/dist",
+            "timeout": 15000,
+            "sourceMaps": true,
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Electron: All",
+            "configurations": [
+                // "Electron: Main",
+                "Electron: Renderer"
+            ]
+        }
+    ]
+}

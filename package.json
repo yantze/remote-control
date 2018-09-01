@@ -13,11 +13,8 @@
   "repository": "https://github.com/yantze/remote-control",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo",
-    "typescript"
+    "Remote Control",
+    "Mobile web browser"
   ],
   "author": "GitHub",
   "license": "private",
@@ -27,6 +24,8 @@
     "electron": "^2.0.8",
     "electron-builder": "^20.28.3",
     "electron-webpack": "^2.3.1",
+    "node-sass": "^4.9.3",
+    "sass-loader": "^7.1.0",
     "ts-loader": "^4.5.0",
     "tslint": "^5.10.0",
     "typescript": "^2.9.2",
@@ -37,12 +36,9 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
+    "@types/qrcode": "^1.2.0",
+    "qrcode": "^1.2.2",
+    "remote-control-server": "file:../remote-control-server",
     "source-map-support": "^0.5.9"
-  },
-  "electronWebpack": {
-    "commonSourceDirectory": "src/common",
-    "renderer": {
-      "webpackConfig": "custom.webpack.additions.js"
-    }
   }
 }
