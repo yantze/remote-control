@@ -19,6 +19,7 @@
   "author": "GitHub",
   "license": "private",
   "devDependencies": {
+    "@types/qrcode": "^1.2.0",
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
     "electron": "^2.0.8",
@@ -36,7 +37,6 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
-    "@types/qrcode": "^1.2.0",
     "qrcode": "^1.2.2",
     "remote-control-server": "file:../remote-control-server",
     "source-map-support": "^0.5.9"
