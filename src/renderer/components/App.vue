@@ -50,6 +50,8 @@ import coreServer from "remote-control-server";
 
 import { toDataURL, QRCodeToDataURLOptions } from "qrcode";
 
+const SERVER_PORT = 3399;
+
 // declare const __static: string;
 
 // interface URLDatas {
@@ -104,7 +106,7 @@ export default Vue.extend({
     startServer() {
       if (this.serverStatus !== SERVER_STATUS.STARTED) {
         console.log("start server...");
-        coreServer({ port: 4000 });
+        coreServer({ port: SERVER_PORT });
         this.serverStatus = SERVER_STATUS.STARTED;
         this.showQRCode();
       } else {
@@ -115,8 +117,9 @@ export default Vue.extend({
       //   QRCode.toDataURL();
       const ifaces = networkInterfaces();
       const regex = /(^10\.*|^172.16.*$|^192.*$)/gm;
-
+      this.supportAddress = [];
       let supportAddress: string[] = [];
+
       Object.keys(ifaces).forEach(ifname => {
         ifaces[ifname].forEach(iface => {
           regex.test(iface.address) && supportAddress.push(iface.address);
@@ -129,7 +132,7 @@ export default Vue.extend({
       supportAddress.push(hostname());
 
       const addrGens: Promise<any>[] = supportAddress.reverse().map(address => {
-        const url = `http://${address}:4000/`;
+        const url = `http://${address}:${SERVER_PORT}/`;
         this.supportAddress.push(url);
 
         let options: QRCodeToDataURLOptions = {
