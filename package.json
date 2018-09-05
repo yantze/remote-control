@@ -1,7 +1,7 @@
 {
-  "name": "electron-quick-start-typescript",
-  "version": "1.0.0",
-  "description": "",
+  "name": "remote-control",
+  "version": "1.0.0-alpha",
+  "description": "Remote Control as your keyboard and trackpad.",
   "scripts": {
     "dev": "electron-webpack dev",
     "lint": "tslint -c tslint.json -p tsconfig.json",
@@ -16,20 +16,21 @@
     "Remote Control",
     "Mobile web browser"
   ],
-  "author": "GitHub",
-  "license": "private",
+  "author": "yantze",
+  "license": "GPLv2",
   "devDependencies": {
     "@types/qrcode": "^1.2.0",
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
     "electron": "^2.0.8",
     "electron-builder": "^20.28.3",
+    "electron-updater": "^3.1.2",
     "electron-webpack": "^2.3.1",
     "node-sass": "^4.9.3",
     "sass-loader": "^7.1.0",
     "ts-loader": "^4.5.0",
     "tslint": "^5.10.0",
-    "typescript": "^2.9.2",
+    "typescript": "^3.0.3",
     "vue": "^2.5.17",
     "vue-loader": "^15.4.1",
     "vue-template-compiler": "^2.5.17",
@@ -37,8 +38,44 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
+    "electron-fetch": "^1.2.1",
     "qrcode": "^1.2.2",
     "remote-control-server": "file:../remote-control-server",
     "source-map-support": "^0.5.9"
+  },
+  "electronWebpack": {
+    "title": "Remote Control"
+  },
+  "build": {
+    "appId": "com.vastiny.remote.app",
+    "productName": "Remote Control",
+    "copyright": "Copyright (c) yantze All rights reserved.",
+    "asar": true,
+    "compression": "maximum",
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        "dmg"
+      ]
+    },
+    "dmg": {
+      "title": "${productName}"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": true
+    },
+    "linux": {
+      "icon": "icon.icns",
+      "category": "Utility",
+      "target": [
+        "rpm",
+        "deb"
+      ]
+    }
   }
 }
