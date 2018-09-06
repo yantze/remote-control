@@ -10,8 +10,10 @@
         </div>
       </div>
       <div id="server-button-group" class="flex-center">
-        <button class="button" @click="startServer">启动服务</button>
+        <button class="button" @click="startServer">Start</button>
       </div>
+
+      <div id="copyright">2018 ©yantze</div>
     </div>
 
     <div v-else id="ready">
@@ -280,6 +282,14 @@ html {
         padding-bottom: 5px;
       }
     }
+  }
+
+  #copyright {
+    color: gray;
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
   }
 }
 </style>

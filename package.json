@@ -1,6 +1,6 @@
 {
   "name": "remote-control",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Remote Control as your keyboard and trackpad.",
   "scripts": {
     "dev": "electron-webpack dev",
@@ -39,10 +39,21 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
+    "browserify": "^16.2.2",
+    "browserify-hmr": "^0.3.6",
     "electron-fetch": "^1.2.1",
+    "express": "^4.16.3",
+    "hammerjs": "^2.0.8",
+    "normalize.css": "^8.0.0",
+    "pug": "^2.0.3",
     "qrcode": "^1.2.2",
     "remote-control-server": "file:vendor/remote-control-server",
-    "source-map-support": "^0.5.9"
+    "robotjs": "^0.5.1",
+    "seamless-immutable": "^7.1.4",
+    "socket.io": "^2.1.1",
+    "source-map-support": "^0.5.9",
+    "vueify": "^9.4.1",
+    "watchify": "^3.11.0"
   },
   "electronWebpack": {
     "title": "Remote Control"
