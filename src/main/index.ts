@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron"
 import * as path from "path"
 import { format as formatUrl } from "url"
+import { autoUpdater } from "electron-updater"
 
 const isDevelopment = process.env.NODE_ENV !== "production"
 
@@ -78,12 +79,4 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-// function checkForUpdate() {
-//   fetch('https://remote.qingrizhi.com/lastest-update.json').then(data => {
-//     console.log('data:', data);
-//   }).catch(error => {
-//     console.log('error:', error);
-//   })
-// }
-
-// checkForUpdate();
+autoUpdater.checkForUpdatesAndNotify()

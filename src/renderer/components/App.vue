@@ -63,11 +63,13 @@ const SERVER_STATUS = {
 // let sp: ChildProcess | null;
 
 export default Vue.extend({
-  data: {
-    qrimgs: [],
-    serverStatus: SERVER_STATUS.STOPED,
-    showConsole: false,
-    supportAddress: [] as string[],
+  data() {
+    return {
+      qrimgs: [],
+      serverStatus: SERVER_STATUS.STOPED,
+      showConsole: false,
+      supportAddress: [] as string[],
+    }
   },
   computed: {
     showMain(): boolean {
