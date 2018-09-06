@@ -38,19 +38,16 @@
 
 <script lang="ts">
 // import * as path from "path";
-import { networkInterfaces, hostname } from "os";
 
-// import fsp from "fs-extra-promise";
-// import { ChildProcess } from "child_process";
-import Vue from "vue";
+import Vue from "vue"
 
-// import QRCode from "qrcode";
+import coreServer from "remote-control-server"
 
-import coreServer from "remote-control-server";
+import { networkInterfaces, hostname } from "os"
 
-import { toDataURL, QRCodeToDataURLOptions } from "qrcode";
+import { toDataURL, QRCodeToDataURLOptions } from "qrcode"
 
-const SERVER_PORT = 3399;
+const SERVER_PORT = 3399
 
 // declare const __static: string;
 
@@ -59,25 +56,23 @@ const SERVER_PORT = 3399;
 // }
 
 const SERVER_STATUS = {
+  STARTED: "started",
   STOPED: "stoped",
-  STARTED: "started"
-};
+}
 
 // let sp: ChildProcess | null;
 
 export default Vue.extend({
-  data: function() {
-    return {
-      showConsole: false,
-      serverStatus: SERVER_STATUS.STOPED,
-      supportAddress: <string[]>[],
-      qrimgs: []
-    };
+  data: {
+    qrimgs: [],
+    serverStatus: SERVER_STATUS.STOPED,
+    showConsole: false,
+    supportAddress: [] as string[],
   },
   computed: {
     showMain(): boolean {
-      return this.serverStatus === SERVER_STATUS.STOPED;
-    }
+      return this.serverStatus === SERVER_STATUS.STOPED
+    },
   },
   methods: {
     createProc() {
@@ -100,58 +95,60 @@ export default Vue.extend({
     },
     stopServer() {
       // sp && sp.kill();
-      console.log("stopping...");
-      this.serverStatus = SERVER_STATUS.STOPED;
+      console.log("stopping...")
+      this.serverStatus = SERVER_STATUS.STOPED
     },
     startServer() {
       if (this.serverStatus !== SERVER_STATUS.STARTED) {
-        console.log("start server...");
-        coreServer({ port: SERVER_PORT });
-        this.serverStatus = SERVER_STATUS.STARTED;
-        this.showQRCode();
+        console.log("start server...")
+        coreServer({ port: SERVER_PORT })
+        this.serverStatus = SERVER_STATUS.STARTED
+        this.showQRCode()
       } else {
-        console.log("已启动");
+        console.log("已启动")
       }
     },
     showQRCode() {
       //   QRCode.toDataURL();
-      const ifaces = networkInterfaces();
-      const regex = /(^10\.*|^172.16.*$|^192.*$)/gm;
-      this.supportAddress = [];
-      let supportAddress: string[] = [];
+      const ifaces = networkInterfaces()
+      const regex = /(^10\.*|^172.16.*$|^192.*$)/gm
+      this.supportAddress = []
+      const supportAddress: string[] = []
 
       Object.keys(ifaces).forEach(ifname => {
         ifaces[ifname].forEach(iface => {
-          regex.test(iface.address) && supportAddress.push(iface.address);
-        });
-      });
+          regex.test(iface.address) && supportAddress.push(iface.address)
+        })
+      })
 
       if (supportAddress.length > 2) {
-        supportAddress.splice(0, supportAddress.length - 2);
+        supportAddress.splice(0, supportAddress.length - 2)
       }
-      supportAddress.push(hostname());
+      supportAddress.push(hostname())
 
-      const addrGens: Promise<any>[] = supportAddress.reverse().map(address => {
-        const url = `http://${address}:${SERVER_PORT}/`;
-        this.supportAddress.push(url);
+      const addrGens: Array<Promise<any>> = supportAddress
+        .reverse()
+        .map(address => {
+          const url = `http://${address}:${SERVER_PORT}/`
+          this.supportAddress.push(url)
 
-        let options: QRCodeToDataURLOptions = {
-          // width: 200,
-          type: "image/png",
-          margin: 0,
-          color: {
-            // dark: "#00F", // Blue dots
-            light: "#0000" // Transparent background
+          const options: QRCodeToDataURLOptions = {
+            // width: 200,
+            type: "image/png",
+            margin: 0,
+            color: {
+              // dark: "#00F", // Blue dots
+              light: "#0000", // Transparent background
+            },
           }
-        };
-        return toDataURL(url, options);
-      });
+          return toDataURL(url, options)
+        })
       Promise.all(addrGens).then(urlDatas => {
-        this.qrimgs = <never[]>urlDatas;
-      });
-    }
-  }
-});
+        this.qrimgs = urlDatas as never[]
+      })
+    },
+  },
+})
 </script>
 
 <style lang="scss">

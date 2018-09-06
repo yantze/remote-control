@@ -1,22 +1,17 @@
-# electron-quick-start-typescript-vue
+# Remote Control
 
-Base on [https://github.com/electron/electron-quick-start-typescript](https://github.com/electron/electron-quick-start-typescript).
+Remote control PC/Mac/Linux by web browser, No image.
 
 ## To Use
 
-From your command line:
+Download from release page: https://github.com/yantze/remote-control/releases
 
-```bash
-# Clone this repository
-git clone https://github.com/yantze/electron-quick-start-typescript-vue
-# Go into the repository
-cd electron-quick-start-typescript-vue
-# Install dependencies
-npm install
-# Run the app
-npm start
-```
+For chinese user: http://remote.qingrizhi.com
 
-## License
+## ScreenShot
 
-private
+App ready:
+![window ready](./screenshot/ready.png)
+
+App turn on:
+![app running](./screenshot/running.png)

@@ -8,7 +8,8 @@
     "start": "npm run build && electron ./dist/main.js",
     "compile": "electron-webpack",
     "dist": "npm run compile && electron-builder",
-    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
+    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null",
+    "publish": "build --mac --win -p always"
   },
   "repository": "https://github.com/yantze/remote-control",
   "keywords": [
@@ -40,7 +41,7 @@
   "dependencies": {
     "electron-fetch": "^1.2.1",
     "qrcode": "^1.2.2",
-    "remote-control-server": "file:../remote-control-server",
+    "remote-control-server": "file:vendor/remote-control-server",
     "source-map-support": "^0.5.9"
   },
   "electronWebpack": {

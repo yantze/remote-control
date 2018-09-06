@@ -1,0 +1,3 @@
+[submodule "vendor/remote-control-server"]
+	path = vendor/remote-control-server
+	url = git@github.com:yantze/remote-control-server.git
