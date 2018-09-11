@@ -7,7 +7,7 @@
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron ./dist/main.js",
     "compile": "electron-webpack",
-    "dist": "npm run compile && electron-builder",
+    "dist": "npm run compile --production && electron-builder",
     "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null",
     "publish": "build --mac --win -p always"
   },
@@ -63,12 +63,8 @@
     "productName": "Remote Control",
     "copyright": "Copyright (c) yantze All rights reserved.",
     "asar": true,
-    "compression": "maximum",
     "mac": {
-      "category": "public.app-category.utilities",
-      "target": [
-        "dmg"
-      ]
+      "category": "public.app-category.utilities"
     },
     "dmg": {
       "title": "${productName}"
