@@ -71,8 +71,6 @@ let forkServer: ChildProcess
 //   URLData: string[];
 // }
 
-console.log('path:', store.getPath())
-
 export default Vue.extend({
   data() {
     return {

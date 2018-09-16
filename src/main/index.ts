@@ -82,6 +82,28 @@ app.on('activate', () => {
 
 app.on('will-finish-launching', () => {
   autoUpdater.checkForUpdatesAndNotify()
-
 })
 
+autoUpdater.on('error', error => {
+  console.log('auto update error:', error)
+})
+
+autoUpdater.on('checking-for-update', (data, data2) => {
+  console.log('auto update checking:', data, data2)
+})
+
+autoUpdater.on('update-available', (data, data2) => {
+  console.log('auto update available:', data, data2)
+})
+
+autoUpdater.on('update-not-available', (data, data2) => {
+  console.log('auto update not available:', data, data2)
+})
+
+autoUpdater.on('download-progress', (data, data2) => {
+  console.log('auto update progress:', data, data2)
+})
+
+autoUpdater.on('update-downloaded', (data, data2) => {
+  console.log('auto update downloaded:', data, data2)
+})
