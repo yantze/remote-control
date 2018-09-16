@@ -1,6 +1,6 @@
 {
   "name": "remote-control",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Remote Control as your keyboard and trackpad.",
   "scripts": {
     "dev": "electron-webpack dev",
@@ -9,7 +9,7 @@
     "compile": "electron-webpack",
     "dist": "npm run compile --production && electron-builder",
     "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null",
-    "publish": "build --mac --win -p always"
+    "publish": "compile && build --mac --win -p always"
   },
   "repository": "https://github.com/yantze/remote-control",
   "keywords": [

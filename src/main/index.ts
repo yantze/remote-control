@@ -33,9 +33,9 @@ function createWindow() {
     )
   }
 
-  // if (isDevelopment) {
-  mainWindow.webContents.openDevTools()
-  // }
+  if (isDevelopment) {
+    mainWindow.webContents.openDevTools()
+  }
 
   mainWindow.webContents.on('devtools-opened', () => {
     mainWindow && mainWindow.focus()
@@ -85,33 +85,32 @@ autoUpdater.on('error', error => {
   console.log('auto update error:', error)
 })
 
-autoUpdater.on('checking-for-update', (data, data2) => {
-  console.log('auto update checking:', data, data2)
+autoUpdater.on('checking-for-update', () => {
+  console.log('auto update checking')
 })
 
-autoUpdater.on('update-available', (data, data2) => {
-  console.log('auto update available:', data, data2)
+autoUpdater.on('update-available', data => {
+  console.log('auto update available:', data)
 })
 
-autoUpdater.on('update-not-available', (data, data2) => {
-  console.log('auto update not available:', data, data2)
+autoUpdater.on('update-not-available', data => {
+  console.log('auto update not available:', data)
 })
 
-autoUpdater.on('download-progress', (data, data2) => {
-  console.log('auto update progress:', data, data2)
+autoUpdater.on('download-progress', data => {
+  console.log('auto update progress:', data)
 })
 
 autoUpdater.on('update-downloaded', (data, data2) => {
   console.log('auto update downloaded:', data, data2)
   const retId = dialog.showMessageBox({
     title: '有可用更新！',
-    message: '最新版本已经下载完成，点击确认自动更新，否则下次启动再更新。',
+    message: '有最新版本，是否下次启动更新？',
     buttons: ['Cancel', 'OK'],
     cancelId: 0,
   } as Electron.MessageBoxOptions)
   if (retId === 1) {
-    // immediately
-    console.log('点击了确认')
+    // install can not immediately
     autoUpdater.quitAndInstall()
   }
 })
