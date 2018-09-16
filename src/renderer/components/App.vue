@@ -76,7 +76,7 @@ export default Vue.extend({
     return {
       instanceServer: null as net.Server | null,
       qrimgs: [],
-      serverStatus: store.get(KEY_SERVER_STATUS) || SERVER_STATUS.STOPED,
+      serverStatus: SERVER_STATUS.STOPED,
       showConsole: false,
       supportAddress: [] as string[],
     }

@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { autoUpdater } from 'electron-updater'
@@ -67,6 +67,7 @@ app.on('window-all-closed', () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow()
+  autoUpdater.checkForUpdatesAndNotify()
 })
 
 app.on('activate', () => {
@@ -79,10 +80,6 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-
-app.on('will-finish-launching', () => {
-  autoUpdater.checkForUpdatesAndNotify()
-})
 
 autoUpdater.on('error', error => {
   console.log('auto update error:', error)
@@ -106,4 +103,15 @@ autoUpdater.on('download-progress', (data, data2) => {
 
 autoUpdater.on('update-downloaded', (data, data2) => {
   console.log('auto update downloaded:', data, data2)
+  const retId = dialog.showMessageBox({
+    title: '有可用更新！',
+    message: '最新版本已经下载完成，点击确认自动更新，否则下次启动再更新。',
+    buttons: ['Cancel', 'OK'],
+    cancelId: 0,
+  } as Electron.MessageBoxOptions)
+  if (retId === 1) {
+    // immediately
+    console.log('点击了确认')
+    autoUpdater.quitAndInstall()
+  }
 })
