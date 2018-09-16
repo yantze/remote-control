@@ -20,6 +20,8 @@
   "author": "yantze",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
+    "@types/conf": "^1.4.0",
+    "@types/electron-store": "^1.3.0",
     "@types/qrcode": "^1.2.0",
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
@@ -39,6 +41,7 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
+    "conf": "^2.0.0",
     "electron-fetch": "^1.2.1",
     "qrcode": "^1.2.2",
     "remote-control-server": "file:vendor/remote-control-server",
@@ -52,7 +55,9 @@
     "productName": "Remote Control",
     "copyright": "Copyright (c) yantze All rights reserved.",
     "asar": true,
-    "publish": ["github"],
+    "publish": [
+      "github"
+    ],
     "mac": {
       "category": "public.app-category.utilities",
       "target": [

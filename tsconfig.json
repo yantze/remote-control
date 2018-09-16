@@ -4,17 +4,10 @@
     "module": "esnext",
     "outDir": "dist",
     "baseUrl": ".",
-    "lib": [
-      "es2015",
-      "dom"
-    ],
+    "lib": ["es2015", "dom"],
     "paths": {
-      "*": [
-        "node_modules/*"
-      ]
+      "*": ["node_modules/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.vue"]
 }

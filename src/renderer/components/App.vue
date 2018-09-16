@@ -13,7 +13,9 @@
         <button class="button" @click="startServer">Start</button>
       </div>
 
-      <div id="copyright">2018 ©yantze</div>
+      <div id="copyright">
+        <a href="#" @click="openTutorial">Tutorial</a>
+        ©yantze</div>
     </div>
 
     <div v-else id="ready">
@@ -39,18 +41,25 @@
 </template>
 
 <script lang="ts">
+import { networkInterfaces, hostname } from 'os'
+import net from 'net'
+
 // import * as path from "path";
 import { fork, ChildProcess, ForkOptions } from 'child_process'
 
 import Vue from 'vue'
 
-// import * as server from 'remote-control-server'
-
-import { networkInterfaces, hostname } from 'os'
-
 import { toDataURL, QRCodeToDataURLOptions } from 'qrcode'
 
-import net from 'net'
+import Store from '../../common/store'
+
+import { SERVER_STATUS, KEY_SERVER_STATUS } from '../../common/constant'
+
+import * as server from 'remote-control-server'
+
+import { shell } from 'electron'
+
+const store = new Store()
 
 const SERVER_PORT = 3399
 
@@ -62,30 +71,14 @@ let forkServer: ChildProcess
 //   URLData: string[];
 // }
 
-const SERVER_STATUS = {
-  STARTED: 'started',
-  STOPED: 'stoped',
-}
-
-// let sp: ChildProcess | null;
-
-process.on('message', msg => {
-  console.log('Message from parent:', msg)
-})
-
-setInterval(() => {
-  process.send && process.send('xxxx!!!', () => {
-    console.log('send!-')
-  })
-  console.log('send !')
-}, 3000)
+console.log('path:', store.getPath())
 
 export default Vue.extend({
   data() {
     return {
       instanceServer: null as net.Server | null,
       qrimgs: [],
-      serverStatus: SERVER_STATUS.STOPED,
+      serverStatus: store.get(KEY_SERVER_STATUS) || SERVER_STATUS.STOPED,
       showConsole: false,
       supportAddress: [] as string[],
     }
@@ -95,12 +88,17 @@ export default Vue.extend({
       return this.serverStatus === SERVER_STATUS.STOPED
     },
   },
+  watch: {
+    serverStatus: (val, oldVal) => {
+      store.set(KEY_SERVER_STATUS, val)
+    },
+  },
   methods: {
     createProc() {
-
-      forkServer = fork('./src/renderer/utils/internal-server.js', [], {
+      forkServer = fork('./src/renderer/utils/external-server.js', [], {
         detached: true,
       } as ForkOptions)
+
       forkServer.on('data', msg => {
         console.log('Message from child', msg)
       })
@@ -108,38 +106,33 @@ export default Vue.extend({
         console.log('failed to start process', err)
       })
       forkServer.on('exit', (code, signal) => {
-        console.log(
-          `child process exited with code ${code}, signal: ${signal}`,
-        )
+        console.log(`child process exited with code ${code}, signal: ${signal}`)
       })
-
-      forkServer.on('message', msg => {
-          console.log('Message from child', msg)
-      })
-
-      setInterval(() => {
-        forkServer.send({ hello: 'world' })
-      }, 3000)
-
 
       forkServer.unref()
     },
+
     startServer() {
       if (this.serverStatus !== SERVER_STATUS.STARTED) {
         console.log('start server...')
-        this.createProc()
+        // this.createProc()
+        this.instanceServer = server.start({ port: 3399 })
         this.serverStatus = SERVER_STATUS.STARTED
         this.showQRCode()
       } else {
         console.log('已启动')
       }
     },
+
     stopServer() {
-      // sp && sp.kill();
       console.log('stopping...')
       this.serverStatus = SERVER_STATUS.STOPED
-      forkServer.kill()
+      this.instanceServer!.close(() => {
+        console.log('Server close gracefully')
+      })
+      // forkServer.kill()
     },
+
     showQRCode() {
       const ifaces = networkInterfaces()
       const regex = /(^10\.*|^172.16.*$|^192.*$)/gm
@@ -177,6 +170,9 @@ export default Vue.extend({
       Promise.all(addrGens).then(urlDatas => {
         this.qrimgs = urlDatas as never[]
       })
+    },
+    openTutorial() {
+      shell.openExternal('https://vastiny.com/post/remote-control')
     },
   },
 })
@@ -239,7 +235,6 @@ html {
 }
 </style>
 
-
 <style lang="scss" scoped>
 // $imgs: "../../../static/";
 
@@ -252,7 +247,7 @@ html {
   }
 
   #title {
-    font-family: "SF Pro Display";
+    font-family: 'SF Pro Display';
     font-size: 36px;
     color: #363535;
     text-align: center;
@@ -265,7 +260,7 @@ html {
   // }
 
   #description {
-    font-family: "SF Pro Display";
+    font-family: 'SF Pro Display';
     font-size: 20px;
     color: #363535;
     text-align: center;
