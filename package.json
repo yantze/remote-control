@@ -1,6 +1,6 @@
 {
   "name": "remote-control",
-  "version": "0.2.0",
+  "version": "1.2.0",
   "description": "Remote Control as your keyboard and trackpad.",
   "scripts": {
     "dev": "electron-webpack dev",
