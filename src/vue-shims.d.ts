@@ -4,7 +4,10 @@ declare module "*.vue" {
 }
 
 declare module 'remote-control-server' {
-    // const coreServer: any
-    function coreServer(obj: any): any
-    export default coreServer
+    function start(obj: any): any
+    // interface instanceServer {
+    // }
+    export {
+        start
+    }
 }

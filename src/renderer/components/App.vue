@@ -43,11 +43,13 @@
 
 import Vue from 'vue'
 
-import coreServer from 'remote-control-server'
+import * as server from 'remote-control-server'
 
 import { networkInterfaces, hostname } from 'os'
 
 import { toDataURL, QRCodeToDataURLOptions } from 'qrcode'
+
+import net from 'net'
 
 const SERVER_PORT = 3399
 
@@ -61,6 +63,8 @@ const SERVER_STATUS = {
   STARTED: 'started',
   STOPED: 'stoped',
 }
+
+let instanceServer: net.Server || null
 
 // let sp: ChildProcess | null;
 
@@ -97,20 +101,23 @@ export default Vue.extend({
       //   // createProc();
       // });
     },
-    stopServer() {
-      // sp && sp.kill();
-      console.log('stopping...')
-      this.serverStatus = SERVER_STATUS.STOPED
-    },
     startServer() {
       if (this.serverStatus !== SERVER_STATUS.STARTED) {
         console.log('start server...')
-        coreServer({ port: SERVER_PORT })
+        instanceServer = server.start({ port: SERVER_PORT })
         this.serverStatus = SERVER_STATUS.STARTED
         this.showQRCode()
       } else {
         console.log('已启动')
       }
+    },
+    stopServer() {
+      // sp && sp.kill();
+      console.log('stopping...')
+      this.serverStatus = SERVER_STATUS.STOPED
+      instanceServer.close(() => {
+        console.log('stopped')
+      })
     },
     showQRCode() {
       //   QRCode.toDataURL();

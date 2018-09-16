@@ -52,6 +52,7 @@
     "productName": "Remote Control",
     "copyright": "Copyright (c) yantze All rights reserved.",
     "asar": true,
+    "publish": ["github"],
     "mac": {
       "category": "public.app-category.utilities",
       "target": [
