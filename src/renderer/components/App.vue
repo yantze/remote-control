@@ -40,10 +40,11 @@
 
 <script lang="ts">
 // import * as path from "path";
+import { fork, ChildProcess, ForkOptions } from 'child_process'
 
 import Vue from 'vue'
 
-import * as server from 'remote-control-server'
+// import * as server from 'remote-control-server'
 
 import { networkInterfaces, hostname } from 'os'
 
@@ -52,6 +53,8 @@ import { toDataURL, QRCodeToDataURLOptions } from 'qrcode'
 import net from 'net'
 
 const SERVER_PORT = 3399
+
+let forkServer: ChildProcess
 
 // declare const __static: string;
 
@@ -64,13 +67,23 @@ const SERVER_STATUS = {
   STOPED: 'stoped',
 }
 
-let instanceServer: net.Server || null
-
 // let sp: ChildProcess | null;
+
+process.on('message', msg => {
+  console.log('Message from parent:', msg)
+})
+
+setInterval(() => {
+  process.send && process.send('xxxx!!!', () => {
+    console.log('send!-')
+  })
+  console.log('send !')
+}, 3000)
 
 export default Vue.extend({
   data() {
     return {
+      instanceServer: null as net.Server | null,
       qrimgs: [],
       serverStatus: SERVER_STATUS.STOPED,
       showConsole: false,
@@ -84,27 +97,37 @@ export default Vue.extend({
   },
   methods: {
     createProc() {
-      // let sp = spawn("node", ["./vendor/robot/bin/index.js"], {
-      //   // stdio: "ignore"
-      // });
-      // sp = fork("./vendor/robot/bin/index.js");
-      // sp.on("data", msg => {
-      //   console.log("Message from child", msg);
-      // });
-      // sp.on("error", err => {
-      //   console.log("failed to start process", err);
-      // });
-      // sp.on("exit", (code, signal) => {
-      //   console.log(
-      //     `child process exited with code ${code}, signal: ${signal}`
-      //   );
-      //   // createProc();
-      // });
+
+      forkServer = fork('./src/renderer/utils/internal-server.js', [], {
+        detached: true,
+      } as ForkOptions)
+      forkServer.on('data', msg => {
+        console.log('Message from child', msg)
+      })
+      forkServer.on('error', err => {
+        console.log('failed to start process', err)
+      })
+      forkServer.on('exit', (code, signal) => {
+        console.log(
+          `child process exited with code ${code}, signal: ${signal}`,
+        )
+      })
+
+      forkServer.on('message', msg => {
+          console.log('Message from child', msg)
+      })
+
+      setInterval(() => {
+        forkServer.send({ hello: 'world' })
+      }, 3000)
+
+
+      forkServer.unref()
     },
     startServer() {
       if (this.serverStatus !== SERVER_STATUS.STARTED) {
         console.log('start server...')
-        instanceServer = server.start({ port: SERVER_PORT })
+        this.createProc()
         this.serverStatus = SERVER_STATUS.STARTED
         this.showQRCode()
       } else {
@@ -115,12 +138,9 @@ export default Vue.extend({
       // sp && sp.kill();
       console.log('stopping...')
       this.serverStatus = SERVER_STATUS.STOPED
-      instanceServer.close(() => {
-        console.log('stopped')
-      })
+      forkServer.kill()
     },
     showQRCode() {
-      //   QRCode.toDataURL();
       const ifaces = networkInterfaces()
       const regex = /(^10\.*|^172.16.*$|^192.*$)/gm
       this.supportAddress = []
