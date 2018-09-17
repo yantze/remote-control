@@ -133,7 +133,7 @@ export default Vue.extend({
 
     showQRCode() {
       const ifaces = networkInterfaces()
-      const regex = /(^10\.*|^172.16.*$|^192.*$)/gm
+      const regex = /(^10\.*|^172.*$|^192.*$)/gm
       this.supportAddress = []
       const supportAddress: string[] = []
 
