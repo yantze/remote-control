@@ -8,7 +8,7 @@ import App from './components/App.vue'
 import i18next from 'i18next'
 import VueI18Next from '@panter/vue-i18next'
 
-// import { remote } from 'electron'
+import { remote } from 'electron'
 
 Vue.use(VueI18Next)
 
@@ -29,7 +29,7 @@ const locales = {
 }
 
 i18next.init({
-  lng: 'zh-CN', // remote.app.getLocale(),
+  lng: remote.app.getLocale(),
   resources: {
     'zh-CN': { translation: locales['zh-CN'] },
     // 'en-US': { translation: locales['zh-CN'] },
