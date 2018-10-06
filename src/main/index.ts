@@ -64,6 +64,8 @@ app.on('window-all-closed', () => {
 app.on('ready', () => {
   createWindow()
   autoUpdater.checkForUpdatesAndNotify()
+
+  // const locale = app.getLocale()
 })
 
 app.on('activate', () => {

@@ -1,6 +1,6 @@
 {
   "name": "remote-control",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Remote Control as your keyboard and trackpad.",
   "scripts": {
     "dev": "electron-webpack dev",
@@ -22,6 +22,7 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@types/conf": "^1.4.0",
+    "@types/i18next": "^11.9.0",
     "@types/qrcode": "^1.2.0",
     "babel-loader": "^8.0.0",
     "css-loader": "^1.0.0",
@@ -41,8 +42,10 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
+    "@panter/vue-i18next": "^0.13.0",
     "conf": "^2.0.0",
     "electron-fetch": "^1.2.1",
+    "i18next": "^11.9.0",
     "qrcode": "^1.2.2",
     "remote-control-server": "file:vendor/remote-control-server",
     "source-map-support": "^0.5.9"
