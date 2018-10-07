@@ -55,7 +55,9 @@ function createWindow() {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  app.quit()
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 })
 
 // This method will be called when Electron has finished
@@ -102,9 +104,9 @@ autoUpdater.on('download-progress', data => {
 autoUpdater.on('update-downloaded', (data, data2) => {
   console.log('auto update downloaded:', data, data2)
   const retId = dialog.showMessageBox({
-    title: '有可用更新！',
-    message: '最新版本已经下载，是否立即更新？',
-    buttons: ['Cancel', 'OK'],
+    title: 'Updates available!',
+    message: 'Update now?',
+    buttons: ['Cancel', 'Yes'],
     cancelId: 0,
   } as Electron.MessageBoxOptions)
   if (retId === 1) {
