@@ -82,7 +82,7 @@ export default Vue.extend({
     return {
       instanceServer: null as net.Server | null,
       qrimgs: [],
-      serverStatus: SERVER_STATUS.STOPED,
+      serverStatus: SERVER_STATUS.STOPPED,
       showConsole: false,
       supportAddress: [] as string[],
       tutorialURL,
@@ -131,7 +131,7 @@ export default Vue.extend({
 
     stopServer() {
       console.log('stopping...')
-      this.serverStatus = SERVER_STATUS.STOPED
+      this.serverStatus = SERVER_STATUS.STOPPED
       this.instanceServer!.close(() => {
         console.log('Server close gracefully')
       })

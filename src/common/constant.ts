@@ -1,6 +1,6 @@
 export const SERVER_STATUS = {
   STARTED: 'started',
-  STOPED: 'stoped',
+  STOPPED: 'stopped',
 }
 
 export const KEY_SERVER_STATUS = 'server_status'
