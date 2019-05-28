@@ -16,7 +16,8 @@
 
       <div id="copyright">
         <a href="#" @click="openExternal(tutorialURL)">{{$t("Tutorial") }}</a>
-        ©Yantze</div>
+        ©Yantze
+      </div>
     </div>
 
     <div v-else id="ready">
@@ -25,22 +26,17 @@
         <!-- <img src="../../../static/images/qrcode-description.svg" :alt="$t('Scan the QR code or enter the URL below in your mobile browser')"> -->
       </div>
       <div id="qrcode">
-        <img :src="qrimg"
-            class="qrcode"
-            alt=""
-            v-for="(qrimg, $index) in qrimgs"
-            :key="$index" />
+        <img :src="qrimg" class="qrcode" alt v-for="(qrimg, $index) in qrimgs" :key="$index">
       </div>
       <ul id="url-list">
         <li class="url-text" v-for="(url, key) in supportAddress" :key="key">
           <a href="#" @click="openExternal(url)">{{url}}</a>
-          </li>
+        </li>
       </ul>
       <button id="server-stop-button" class="button" @click="stopServer">{{ $t('Stop') }}</button>
     </div>
 
-    <div v-if="showConsole"
-         id="console"></div>
+    <div v-if="showConsole" id="console"></div>
   </div>
 </template>
 
@@ -90,7 +86,7 @@ export default Vue.extend({
   },
   computed: {
     showMain(): boolean {
-      return this.serverStatus === SERVER_STATUS.STOPED
+      return this.serverStatus === SERVER_STATUS.STOPPED
     },
   },
   watch: {
@@ -155,23 +151,21 @@ export default Vue.extend({
       }
       supportAddress.push(hostname())
 
-      const addrGens: Array<Promise<any>> = supportAddress
-        .reverse()
-        .map(address => {
-          const url = `http://${address}:${SERVER_PORT}/`
-          this.supportAddress.push(url)
+      const addrGens: Array<Promise<any>> = supportAddress.reverse().map(address => {
+        const url = `http://${address}:${SERVER_PORT}/`
+        this.supportAddress.push(url)
 
-          const options: QRCodeToDataURLOptions = {
-            // width: 200,
-            type: 'image/png',
-            margin: 0,
-            color: {
-              // dark: "#00F", // Blue dots
-              light: '#0000', // Transparent background
-            },
-          }
-          return toDataURL(url, options)
-        })
+        const options: QRCodeToDataURLOptions = {
+          // width: 200,
+          type: 'image/png',
+          margin: 0,
+          color: {
+            // dark: "#00F", // Blue dots
+            light: '#0000', // Transparent background
+          },
+        }
+        return toDataURL(url, options)
+      })
       Promise.all(addrGens).then(urlDatas => {
         this.qrimgs = urlDatas as never[]
       })
@@ -185,58 +179,52 @@ export default Vue.extend({
 
 <style lang="scss">
 html {
-    background-color: #ececec;
-    -webkit-font-smoothing: antialiased;
-    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, PingFang SC,
-        Lantinghei SC, -apple-system, Microsoft Yahei, Hiragino Sans GB,
-        Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
-    font-size: 16px;
+  background-color: #ececec;
+  -webkit-font-smoothing: antialiased;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, PingFang SC, Lantinghei SC, -apple-system,
+    Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
+  font-size: 16px;
 }
 
 .flex-center {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .button {
-    font-size: 100%;
-    padding: 0.4em 1em;
-    color: white;
-    border: transparent;
-    background-color: #4c98fe;
-    text-decoration: none;
-    border-radius: 2px;
-    display: inline-block;
-    white-space: nowrap;
-    vertical-align: middle;
-    text-align: center;
-    cursor: pointer;
-    -webkit-user-drag: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    box-sizing: border-box;
-    line-height: normal;
-    letter-spacing: 0.01em;
+  font-size: 100%;
+  padding: 0.4em 1em;
+  color: white;
+  border: transparent;
+  background-color: #4c98fe;
+  text-decoration: none;
+  border-radius: 2px;
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  box-sizing: border-box;
+  line-height: normal;
+  letter-spacing: 0.01em;
 }
 
 .button:hover,
 .button:focus {
-    background-image: linear-gradient(
-        transparent,
-        rgba(0, 0, 0, 0.05) 40%,
-        rgba(0, 0, 0, 0.1)
-    );
-    outline: none;
+  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
+  outline: none;
 }
 
 .button:active {
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset,
-        0 0 6px rgba(0, 0, 0, 0.2) inset;
-    background-color: #247eff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 6px rgba(0, 0, 0, 0.2) inset;
+  background-color: #247eff;
 }
 </style>
 
@@ -244,82 +232,82 @@ html {
 // $imgs: "../../../static/";
 
 #app {
-    .qrcode {
-        width: 120px;
-        height: 120px;
-        display: inline-block;
-        padding: 0 10px 0 10px;
+  .qrcode {
+    width: 120px;
+    height: 120px;
+    display: inline-block;
+    padding: 0 10px 0 10px;
+  }
+
+  #title {
+    font-family: 'SF Pro Display';
+    font-size: 36px;
+    color: #363535;
+    text-align: center;
+    line-height: 40px;
+    font-weight: 300;
+  }
+
+  // #title strong {
+
+  // }
+
+  #description {
+    font-family: 'SF Pro Display';
+    font-size: 20px;
+    color: #363535;
+    text-align: center;
+    line-height: 25px;
+  }
+
+  #title {
+    margin-top: 45px;
+    margin-bottom: 15px;
+  }
+  #title img {
+    // background-image: url($imgs+"images/description@2x.png");
+  }
+  #description img {
+    // background-image: url($imgs+"images/Remote Control@2x.png");
+    height: 18px;
+  }
+
+  #server-button-group {
+    height: 170px;
+  }
+
+  #ready {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    #qrcode-description {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      line-height: 28px;
+      text-align: center;
+      max-width: 350px;
     }
 
-    #title {
-        font-family: "SF Pro Display";
-        font-size: 36px;
-        color: #363535;
-        text-align: center;
-        line-height: 40px;
-        font-weight: 300;
+    #server-stop-button {
     }
 
-    // #title strong {
+    #url-list {
+      font-size: 14px;
+      color: #696969;
 
-    // }
-
-    #description {
-        font-family: "SF Pro Display";
-        font-size: 20px;
-        color: #363535;
-        text-align: center;
-        line-height: 25px;
+      .url-text {
+        padding-bottom: 5px;
+      }
     }
+  }
 
-    #title {
-        margin-top: 45px;
-        margin-bottom: 15px;
-    }
-    #title img {
-        // background-image: url($imgs+"images/description@2x.png");
-    }
-    #description img {
-        // background-image: url($imgs+"images/Remote Control@2x.png");
-        height: 18px;
-    }
-
-    #server-button-group {
-        height: 170px;
-    }
-
-    #ready {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        #qrcode-description {
-            margin-top: 20px;
-            margin-bottom: 20px;
-            line-height: 28px;
-            text-align: center;
-            max-width: 350px;
-        }
-
-        #server-stop-button {
-        }
-
-        #url-list {
-            font-size: 14px;
-            color: #696969;
-
-            .url-text {
-                padding-bottom: 5px;
-            }
-        }
-    }
-
-    #copyright {
-        color: gray;
-        font-size: 12px;
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-    }
+  #copyright {
+    color: gray;
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
 }
 </style>
