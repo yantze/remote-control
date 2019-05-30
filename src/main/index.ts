@@ -1,7 +1,9 @@
-import { app, BrowserWindow, dialog } from 'electron'
+import { app, BrowserWindow, dialog, Tray, Menu, shell } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { autoUpdater } from 'electron-updater'
+import autoLaunch from './auto-launch'
+import controlServer from './control-server'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -10,21 +12,30 @@ if (isDevelopment) {
 }
 
 let mainWindow: Electron.BrowserWindow | null
+let tray: Tray | null
+
+const staticPath = path.join(__dirname, '../../static')
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 385,
     resizable: false,
-    width: 460, // titlebar height 24px
+    width: 310, // titlebar height 24px
+    show: false,
+    frame: false,
+    fullscreenable: false,
+    transparent: true,
+    // backgroundColor: '#2e2c2900',
+    // hasShadow: false,
   })
 
   if (isDevelopment) {
-    mainWindow.loadURL(
+    mainWindow!.loadURL(
       `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`,
     )
   } else {
-    mainWindow.loadURL(
+    mainWindow!.loadURL(
       formatUrl({
         pathname: path.join(__dirname, 'index.html'),
         protocol: 'file',
@@ -34,18 +45,21 @@ function createWindow() {
   }
 
   if (isDevelopment) {
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   }
 
-  mainWindow.webContents.on('devtools-opened', () => {
+  mainWindow!.webContents.on('devtools-opened', () => {
     mainWindow && mainWindow.focus()
     setImmediate(() => {
       mainWindow && mainWindow.focus()
     })
   })
 
+  // Close window only hide it.
+  mainWindow!.on('close', event => {})
+
   // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
+  mainWindow!.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -55,6 +69,7 @@ function createWindow() {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
+  console.log('close4')
   if (process.platform !== 'darwin') {
     app.quit()
   }
@@ -64,6 +79,7 @@ app.on('window-all-closed', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+  createTray()
   createWindow()
   autoUpdater.checkForUpdatesAndNotify()
 
@@ -104,7 +120,7 @@ autoUpdater.on('download-progress', data => {
 autoUpdater.on('update-downloaded', (data, data2) => {
   console.log('auto update downloaded:', data, data2)
   const retId = dialog.showMessageBox({
-    title: 'Updates available!',
+    title: 'Update available!',
     message: 'Update now?',
     buttons: ['Cancel', 'Yes'],
     cancelId: 0,
@@ -114,3 +130,86 @@ autoUpdater.on('update-downloaded', (data, data2) => {
     autoUpdater.quitAndInstall()
   }
 })
+
+const createTray = async () => {
+  tray = new Tray(path.join(staticPath, 'tray/sunTemplate.png'))
+
+  const isEnabled = await autoLaunch.isEnabled()
+  const isShow = mainWindow ? mainWindow.isVisible() : false
+  const isStartServer = controlServer.isStarted()
+  const menuObject: any = [
+    {
+      label: 'About',
+      role: 'about',
+    },
+    {
+      label: 'Project Adress',
+      click: () => {
+        shell.openExternal('https://github.com/yantze/remote-control')
+      },
+    },
+    {
+      label: (isStartServer ? 'Stop' : 'Start') + ' Server',
+      click: () => {},
+    },
+    {
+      label: (isShow ? 'Show' : 'Hide') + ' Remote Control',
+      click: toggleWindow,
+    },
+    {
+      label: (isEnabled ? 'Stop' : 'Start') + ' at login',
+      click: async () => {
+        autoLaunch.setAutoLaunch(!isEnabled)
+      },
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit()
+        console.log('go to quit:')
+      },
+    },
+  ]
+  const contextMenu = Menu.buildFromTemplate(menuObject)
+  console.log('con', contextMenu)
+  tray.setToolTip('This is my application.')
+  // tray.setContextMenu(contextMenu)
+
+  tray.on('right-click', toggleWindow)
+  // tray.on('double-click', toggleWindow)
+  tray.on('click', event => {
+    toggleWindow()
+
+    // Show devtools when command clicked
+    // if (mainWindow.isVisible() && process.defaultApp && event.metaKey) {
+    //   mainWindow.openDevTools({ mode: 'detach' })
+    // }
+  })
+}
+
+const getWindowPosition = () => {
+    const windowBounds = mainWindow!.getBounds()
+    const trayBounds = tray!.getBounds()
+
+    // Center window horizontally below the tray icon
+    const x = Math.round( trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2)
+
+    // Position window 4 pixels vertically below the tray icon
+    const y = Math.round(trayBounds.y + trayBounds.height)
+
+    return { x, y }
+}
+
+const showWindow = () => {
+    const position = getWindowPosition()
+    mainWindow!.setPosition(position.x, position.y, false)
+    mainWindow!.show()
+    mainWindow!.focus()
+}
+
+const toggleWindow = () => {
+  mainWindow && mainWindow.isVisible() ? mainWindow.hide() : showWindow()
+}

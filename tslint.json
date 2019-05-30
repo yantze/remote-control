@@ -4,12 +4,11 @@
     "max-line-length": {
       "options": [120]
     },
-    "new-parens": true,
     "no-arg": true,
     "no-bitwise": true,
     "no-conditional-assignment": true,
     "no-consecutive-blank-lines": false,
-    "semicolon": [true, "never"],
+    "semicolon": [false, "never"],
     "arrow-parens": [true, "ban-single-arg-parens"],
     "trailing-comma": [
       true,
@@ -23,12 +22,16 @@
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-console": [false, "log", "error"],
-    "no-empty": [true, "allow-empty-functions"],
-    "indent": [true, "spaces", 4]
+    "no-empty": [true, "allow-empty-functions"]
   },
   "jsRules": {
     "max-line-length": {
       "options": [120]
+    }
+  },
+  "settings": {
+    "import/resolver": {
+      "import/extensions": [".js", ".jsx", ".mjs", ".ts", ".tsx", ".vue"]
     }
   }
 }
