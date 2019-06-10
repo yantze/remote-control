@@ -31,9 +31,7 @@ function createWindow() {
   })
 
   if (isDevelopment) {
-    mainWindow!.loadURL(
-      `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`,
-    )
+    mainWindow!.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
     mainWindow!.loadURL(
       formatUrl({
@@ -132,7 +130,7 @@ autoUpdater.on('update-downloaded', (data, data2) => {
 })
 
 const createTray = async () => {
-  tray = new Tray(path.join(staticPath, 'tray/sunTemplate.png'))
+  tray = new Tray(path.join(staticPath, 'tray/tray.png'))
 
   const isEnabled = await autoLaunch.isEnabled()
   const isShow = mainWindow ? mainWindow.isVisible() : false
@@ -174,40 +172,39 @@ const createTray = async () => {
     },
   ]
   const contextMenu = Menu.buildFromTemplate(menuObject)
-  console.log('con', contextMenu)
-  tray.setToolTip('This is my application.')
+  tray.setToolTip('Remote control')
   // tray.setContextMenu(contextMenu)
 
-  tray.on('right-click', toggleWindow)
+  tray.on('right-click', () => tray!.popUpContextMenu(contextMenu))
   // tray.on('double-click', toggleWindow)
   tray.on('click', event => {
     toggleWindow()
 
     // Show devtools when command clicked
-    // if (mainWindow.isVisible() && process.defaultApp && event.metaKey) {
-    //   mainWindow.openDevTools({ mode: 'detach' })
-    // }
+    if (mainWindow!.isVisible() && event.metaKey) {
+      mainWindow!.webContents.openDevTools({ mode: 'detach' })
+    }
   })
 }
 
 const getWindowPosition = () => {
-    const windowBounds = mainWindow!.getBounds()
-    const trayBounds = tray!.getBounds()
+  const windowBounds = mainWindow!.getBounds()
+  const trayBounds = tray!.getBounds()
 
-    // Center window horizontally below the tray icon
-    const x = Math.round( trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2)
+  // Center window horizontally below the tray icon
+  const x = Math.round(trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2)
 
-    // Position window 4 pixels vertically below the tray icon
-    const y = Math.round(trayBounds.y + trayBounds.height)
+  // Position window 4 pixels vertically below the tray icon
+  const y = Math.round(trayBounds.y + trayBounds.height)
 
-    return { x, y }
+  return { x, y }
 }
 
 const showWindow = () => {
-    const position = getWindowPosition()
-    mainWindow!.setPosition(position.x, position.y, false)
-    mainWindow!.show()
-    mainWindow!.focus()
+  const position = getWindowPosition()
+  mainWindow!.setPosition(position.x, position.y, false)
+  mainWindow!.show()
+  mainWindow!.focus()
 }
 
 const toggleWindow = () => {
