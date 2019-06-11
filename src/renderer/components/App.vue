@@ -1,7 +1,11 @@
 <template>
   <div id="app">
     <div id="tray-arrow" class="flex-center">
-      <svg width="24" height="12" viewBox="0 0 24 12"><path d="M0 12l2.412-1.53c1.396-.886 3.308-2.692 4.276-4.042l4.127-5.755c.642-.895 1.69-.899 2.347 0l4.216 5.767c.979 1.34 2.898 3.153 4.297 4.057l2.325 1.503h-24z" /></svg>
+      <svg width="24" height="12" viewBox="0 0 24 12">
+        <path
+          d="M0 12l2.412-1.53c1.396-.886 3.308-2.692 4.276-4.042l4.127-5.755c.642-.895 1.69-.899 2.347 0l4.216 5.767c.979 1.34 2.898 3.153 4.297 4.057l2.325 1.503h-24z"
+        ></path>
+      </svg>
     </div>
 
     <div class="content">
@@ -11,8 +15,8 @@
             <img src="../../../static/images/headline-remote-control.svg" alt="Remote Control">
           </h1>
           <div id="description">
-            {{ $t('Use the browser as a remote control') }}
-            <!-- <img src="../../../static/images/description.svg" :alt="$t('Use the browser as a remote control')"> -->
+            {{ $t('Remote control in the browser') }}
+            <!-- <img src="../../../static/images/description.svg" :alt="$t('remote control')"> -->
           </div>
         </div>
         <div id="server-button-group" class="flex-center">
@@ -27,10 +31,10 @@
 
       <div v-else id="ready">
         <div id="qrcode-description">
-          {{ $t('Scan the QR code or enter the URL below in your mobile browser') }}
+          <small>{{ $t('Scan the QR code or enter the URL below in your mobile browser') }}</small>
           <!-- <img src="../../../static/images/qrcode-description.svg" :alt="$t('Scan the QR code or enter the URL below in your mobile browser')"> -->
         </div>
-        <div id="qrcode">
+        <div id="qrcode" class="d-flex overflow-auto">
           <img :src="qrimg" class="qrcode" alt v-for="(qrimg, $index) in qrimgs" :key="$index">
         </div>
         <ul id="url-list">
@@ -40,14 +44,13 @@
         </ul>
         <button id="server-stop-button" class="button" @click="stopServer">{{ $t('Stop') }}</button>
       </div>
-
     </div>
 
     <div v-if="showConsole" id="console"></div>
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { networkInterfaces, hostname } from 'os'
 import net from 'net'
 
@@ -64,13 +67,13 @@ import { SERVER_STATUS, KEY_SERVER_STATUS } from '../../common/constant'
 
 import * as server from 'remote-control-server'
 
-import { shell } from 'electron'
+import { shell, ipcRenderer } from 'electron'
 
 const store = new Store()
 
 const SERVER_PORT = 3399
 
-let forkServer: ChildProcess
+let forkServer
 
 // declare const __static: string;
 
@@ -83,16 +86,24 @@ const tutorialURL = 'https://vastiny.com/post/remote-control'
 export default Vue.extend({
   data() {
     return {
-      instanceServer: null as net.Server | null,
+      instanceServer: null,
       qrimgs: [],
       serverStatus: SERVER_STATUS.STOPPED,
       showConsole: false,
-      supportAddress: [] as string[],
+      supportAddress: [],
       tutorialURL,
     }
   },
+  created() {
+    ipcRenderer.on('operate-server', (ev, operate) => {
+      // ev
+      if (operate.set === 'start') {
+        this.startServer()
+      }
+    })
+  },
   computed: {
-    showMain(): boolean {
+    showMain() {
       return this.serverStatus === SERVER_STATUS.STOPPED
     },
   },
@@ -105,7 +116,7 @@ export default Vue.extend({
     createProc() {
       forkServer = fork('./src/renderer/utils/external-server.js', [], {
         detached: true,
-      } as ForkOptions)
+      })
 
       forkServer.on('data', msg => {
         console.log('Message from child', msg)
@@ -135,7 +146,7 @@ export default Vue.extend({
     stopServer() {
       console.log('stopping...')
       this.serverStatus = SERVER_STATUS.STOPPED
-      this.instanceServer!.close(() => {
+      this.instanceServer.close(() => {
         console.log('Server close gracefully')
       })
       // forkServer.kill()
@@ -145,7 +156,7 @@ export default Vue.extend({
       const ifaces = networkInterfaces()
       const regex = /(^10\.*|^172.*$|^192.*$)/gm
       this.supportAddress = []
-      const supportAddress: string[] = []
+      const supportAddress = []
 
       Object.keys(ifaces).forEach(ifname => {
         ifaces[ifname].forEach(iface => {
@@ -158,11 +169,11 @@ export default Vue.extend({
       }
       supportAddress.push(hostname())
 
-      const addrGens: Array<Promise<any>> = supportAddress.reverse().map(address => {
+      const addrGens = supportAddress.reverse().map(address => {
         const url = `http://${address}:${SERVER_PORT}/`
         this.supportAddress.push(url)
 
-        const options: QRCodeToDataURLOptions = {
+        const options = {
           // width: 200,
           type: 'image/png',
           margin: 0,
@@ -174,10 +185,10 @@ export default Vue.extend({
         return toDataURL(url, options)
       })
       Promise.all(addrGens).then(urlDatas => {
-        this.qrimgs = urlDatas as never[]
+        this.qrimgs = urlDatas
       })
     },
-    openExternal(url: string) {
+    openExternal(url) {
       shell.openExternal(url)
     },
   },
@@ -199,6 +210,8 @@ html {
 
 .content {
   background-color: #ececec;
+  overflow: hidden;
+  height: 309px;
 }
 
 .flex-center {
@@ -262,9 +275,18 @@ html {
   fill: #ececec;
 }
 
+#qrcode {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  overflow-x: auto;
+  width: 100%;
+  padding: 10px;
+}
+
 .qrcode {
-  width: 120px;
-  height: 120px;
+  width: 80px;
+  height: 80px;
   display: inline-block;
   padding: 0 10px 0 10px;
 }
@@ -276,6 +298,10 @@ html {
   text-align: center;
   line-height: 40px;
   font-weight: 300;
+
+  img {
+    width: 180px;
+  }
 }
 
 // #title strong {
@@ -284,10 +310,11 @@ html {
 
 #description {
   font-family: 'SF Pro Display';
-  font-size: 20px;
-  color: #363535;
+  font-size: 17px;
+  color: #505050;
   text-align: center;
   line-height: 25px;
+  font-weight: 300;
 }
 
 #title {
@@ -312,17 +339,19 @@ html {
   #qrcode-description {
     margin-top: 20px;
     margin-bottom: 20px;
-    line-height: 28px;
+    // line-height: 28px;
     text-align: center;
     max-width: 350px;
   }
 
-  #server-stop-button {
-  }
+  // #server-stop-button {
+  // }
 
   #url-list {
     font-size: 14px;
     color: #696969;
+    padding-left: 0;
+    overflow-x: auto;
 
     .url-text {
       padding-bottom: 5px;

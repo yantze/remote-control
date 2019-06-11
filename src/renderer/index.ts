@@ -15,15 +15,13 @@ Vue.use(VueI18Next)
 const locales = {
   'zh-CN': {
     'Tutorial': '使用说明',
-    'Scan the QR code or enter the URL below in your mobile browser':
-      '扫描二维码或者在移动设备浏览器中输入下面的网址',
+    'Scan the QR code or enter the URL below in your mobile browser': '扫描二维码或者在移动设备浏览器中输入下面的网址',
     'Use the browser as a remote control': '把浏览器用作遥控器',
+    'Remote control in the browser': '在浏览器中控制',
     'Start': '启动',
     'Stop': '停止',
-    '../../../static/images/description.svg':
-      '../../../static/images/description-cn.svg',
-    '../../../static/images/qrcode-description.svg':
-      '../../../static/images/qrcode-description-cn.svg',
+    '../../../static/images/description.svg': '../../../static/images/description-cn.svg',
+    '../../../static/images/qrcode-description.svg': '../../../static/images/qrcode-description-cn.svg',
     'loadbundle': 'Load bundle language: {{lang}}',
   },
 }

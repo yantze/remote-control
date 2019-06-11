@@ -3,7 +3,7 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { autoUpdater } from 'electron-updater'
 import autoLaunch from './auto-launch'
-import controlServer from './control-server'
+// import controlServer from './control-server'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -19,7 +19,7 @@ const staticPath = path.join(__dirname, '../../static')
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    height: 385,
+    height: 321,
     resizable: false,
     width: 310, // titlebar height 24px
     show: false,
@@ -133,13 +133,9 @@ const createTray = async () => {
   tray = new Tray(path.join(staticPath, 'tray/tray.png'))
 
   const isEnabled = await autoLaunch.isEnabled()
-  const isShow = mainWindow ? mainWindow.isVisible() : false
-  const isStartServer = controlServer.isStarted()
+  // const isShow = mainWindow && mainWindow.isVisible()
+  // const isStartServer = controlServer.isStarted()
   const menuObject: any = [
-    {
-      label: 'About',
-      role: 'about',
-    },
     {
       label: 'Project Adress',
       click: () => {
@@ -147,11 +143,14 @@ const createTray = async () => {
       },
     },
     {
-      label: (isStartServer ? 'Stop' : 'Start') + ' Server',
-      click: () => {},
+      // label: (isStartServer ? 'Stop' : 'Start') + ' Server',
+      label: 'Start Server',
+      click: () => startServer(),
+      checked: true,
     },
     {
-      label: (isShow ? 'Show' : 'Hide') + ' Remote Control',
+      // label: (isShow ? 'Show' : 'Hide') + ' Remote Control',
+      label: 'Toggle Remote control',
       click: toggleWindow,
     },
     {
@@ -159,6 +158,10 @@ const createTray = async () => {
       click: async () => {
         autoLaunch.setAutoLaunch(!isEnabled)
       },
+    },
+    {
+      label: 'About',
+      role: 'about',
     },
     {
       type: 'separator',
@@ -176,7 +179,7 @@ const createTray = async () => {
   // tray.setContextMenu(contextMenu)
 
   tray.on('right-click', () => tray!.popUpContextMenu(contextMenu))
-  // tray.on('double-click', toggleWindow)
+  tray.on('double-click', toggleWindow)
   tray.on('click', event => {
     toggleWindow()
 
@@ -209,4 +212,8 @@ const showWindow = () => {
 
 const toggleWindow = () => {
   mainWindow && mainWindow.isVisible() ? mainWindow.hide() : showWindow()
+}
+
+const startServer = () => {
+  mainWindow!.webContents.send('operate-server', { set: 'start' })
 }
