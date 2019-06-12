@@ -11,6 +11,10 @@ if (isDevelopment) {
   app.commandLine.appendSwitch('remote-debugging-port', '9223')
 }
 
+if (process.platform === 'darwin') {
+  app.dock.hide()
+}
+
 let mainWindow: Electron.BrowserWindow | null
 let tray: Tray | null
 
@@ -179,12 +183,12 @@ const createTray = async () => {
   // tray.setContextMenu(contextMenu)
 
   tray.on('right-click', () => tray!.popUpContextMenu(contextMenu))
-  tray.on('double-click', toggleWindow)
+  // tray.on('double-click', toggleWindow)
   tray.on('click', event => {
     toggleWindow()
 
-    // Show devtools when command clicked
-    if (mainWindow!.isVisible() && event.metaKey) {
+    // Show devtools when alt clicked
+    if (mainWindow!.isVisible() && event.altKey) {
       mainWindow!.webContents.openDevTools({ mode: 'detach' })
     }
   })
@@ -211,7 +215,9 @@ const showWindow = () => {
 }
 
 const toggleWindow = () => {
-  mainWindow && mainWindow.isVisible() ? mainWindow.hide() : showWindow()
+  setTimeout(() => {
+    mainWindow && mainWindow.isVisible() ? mainWindow.hide() : showWindow()
+  })
 }
 
 const startServer = () => {
