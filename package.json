@@ -27,7 +27,7 @@
         "@types/qrcode": "^1.2.0",
         "babel-loader": "^8.0.0",
         "css-loader": "^1.0.0",
-        "electron": "^3.0.3",
+        "electron": "^9.1.0",
         "electron-builder": "^20.28.4",
         "electron-updater": "^3.0.4",
         "electron-webpack": "^2.3.1",
