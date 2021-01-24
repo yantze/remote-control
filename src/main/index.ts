@@ -30,6 +30,10 @@ function createWindow() {
     frame: false,
     fullscreenable: false,
     transparent: true,
+    webPreferences: {
+      enableRemoteModule: true,
+    }
+
     // backgroundColor: '#2e2c2900',
     // hasShadow: false,
   })
@@ -119,15 +123,15 @@ autoUpdater.on('download-progress', data => {
   console.log('auto update progress:', data)
 })
 
-autoUpdater.on('update-downloaded', (data, data2) => {
+autoUpdater.on('update-downloaded', async (data, data2) => {
   console.log('auto update downloaded:', data, data2)
-  const retId = dialog.showMessageBox({
+  const retId = await dialog.showMessageBox({
     title: 'Update available!',
     message: 'Update now?',
     buttons: ['Cancel', 'Yes'],
     cancelId: 0,
   } as Electron.MessageBoxOptions)
-  if (retId === 1) {
+  if (retId.response === 1) {
     // install can not immediately
     autoUpdater.quitAndInstall()
   }
