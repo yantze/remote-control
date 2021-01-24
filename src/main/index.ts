@@ -93,9 +93,7 @@ app.on('ready', () => {
 app.on('activate', () => {
   // On OS X it"s common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
+  showWindow()
 })
 
 // In this file you can include the rest of your app"s specific main process
@@ -222,13 +220,14 @@ const showWindow = () => {
 }
 
 const toggleWindow = () => {
-  setTimeout(() => {
-    if (!mainWindow || !mainWindow.isVisible()) {
-      return showWindow()
-    }
+  if (!mainWindow || !mainWindow.isVisible()) {
+    setTimeout(() => {
+      showWindow()
+    })
+    return
+  }
 
-    return mainWindow.hide()
-  })
+  return mainWindow.hide()
 }
 
 const startServer = () => {
