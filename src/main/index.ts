@@ -25,11 +25,11 @@ const staticPath = path.join(__dirname, isDevelopment ? '../../static' : '../sta
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    height: 321,
+    height: 311,
     resizable: false,
     width: 310, // titlebar height 24px
-    // show: false,
-    // frame: false,
+    show: false,
+    frame: false,
     fullscreenable: false,
     // transparent: true,
     webPreferences: {
@@ -44,7 +44,7 @@ function createWindow() {
   if (isDevelopment) {
     mainWindow!.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
-    mainWindow!.loadFile(path.resolve(__dirname, '../renderer/index.html'))
+    mainWindow!.loadFile(path.resolve(__dirname, 'index.html'))
   }
 
   if (isDevelopment) {
@@ -68,6 +68,8 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
+  return mainWindow
 }
 
 // Quit when all windows are closed.
@@ -82,7 +84,6 @@ app.on('window-all-closed', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  createWindow()
   createTray()
   autoUpdater.checkForUpdatesAndNotify()
 
@@ -190,7 +191,7 @@ const createTray = async () => {
     toggleWindow()
 
     // Show devtools when alt clicked
-    if (mainWindow!.isVisible() && event.altKey) {
+    if (mainWindow && mainWindow!.isVisible() && event.altKey) {
       mainWindow!.webContents.openDevTools({ mode: 'detach' })
     }
   })
@@ -210,6 +211,10 @@ const getWindowPosition = () => {
 }
 
 const showWindow = () => {
+  if (!mainWindow) {
+    mainWindow = createWindow()
+  }
+
   const position = getWindowPosition()
   mainWindow!.setPosition(position.x, position.y, false)
   mainWindow!.show()
@@ -218,8 +223,11 @@ const showWindow = () => {
 
 const toggleWindow = () => {
   setTimeout(() => {
-    showWindow()
-    // mainWindow && mainWindow.isVisible() ? mainWindow.hide() : showWindow()
+    if (!mainWindow || !mainWindow.isVisible()) {
+      return showWindow()
+    }
+
+    return mainWindow.hide()
   })
 }
 

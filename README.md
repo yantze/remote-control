@@ -16,7 +16,8 @@ git clone https://github.com/yantze/remote-control
 cd remote-control
 npm i
 
-cd ../..
+npm run rebuild
+
 npm run dev
 ```
 

@@ -1,13 +1,12 @@
 <template>
   <div id="app">
-    <div id="tray-arrow" class="flex-center">
+    <!-- <div id="tray-arrow" class="flex-center">
       <svg width="24" height="12" viewBox="0 0 24 12">
         <path
           d="M0 12l2.412-1.53c1.396-.886 3.308-2.692 4.276-4.042l4.127-5.755c.642-.895 1.69-.899 2.347 0l4.216 5.767c.979 1.34 2.898 3.153 4.297 4.057l2.325 1.503h-24z"
         ></path>
       </svg>
-    </div>
-
+    </div> -->
     <div class="content">
       <div v-if="showMain" id="main">
         <div>
@@ -111,7 +110,8 @@ export default Vue.extend({
       return this.serverStatus === SERVER_STATUS.STOPPED
     },
     descImg() {
-      return path.resolve(staticPath , "images/headline-remote-control.svg")
+      // return path.resolve(staticPath , "images/headline-remote-control.svg")
+      return "../static/images/headline-remote-control.svg"
     },
   },
   watch: {
