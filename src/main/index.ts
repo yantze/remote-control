@@ -32,6 +32,7 @@ function createWindow() {
     frame: false,
     fullscreenable: false,
     // transparent: true,
+    skipTaskbar: true,
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -45,6 +46,7 @@ function createWindow() {
     mainWindow!.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
     mainWindow!.loadFile(path.resolve(__dirname, 'index.html'))
+    // mainWindow!.loadFile(path.resolve(__dirname, '../renderer/index.html'))
   }
 
   if (isDevelopment) {
@@ -202,8 +204,16 @@ const getWindowPosition = () => {
   // Center window horizontally below the tray icon
   const x = Math.round(trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2)
 
+  let yOffset = 0
+  if (process.platform == 'win32') {
+    yOffset = -1 * windowBounds.height
+  } else {
+    yOffset += trayBounds.height
+  }
+
+
   // Position window 4 pixels vertically below the tray icon
-  const y = Math.round(trayBounds.y + trayBounds.height)
+  const y = Math.round(trayBounds.y + yOffset)
 
   return { x, y }
 }
