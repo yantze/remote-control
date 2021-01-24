@@ -1,8 +1,9 @@
-import { app, BrowserWindow, dialog, Tray, Menu, shell } from 'electron'
+import { app, dialog, Tray, Menu, shell } from 'electron'
 import * as path from 'path'
 // import { format as formatUrl } from 'url'
 import { autoUpdater } from 'electron-updater'
 import autoLaunch from './auto-launch'
+import { Menubar, menubar } from 'menubar'
 // import controlServer from './control-server'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -17,34 +18,118 @@ if (process.platform === 'darwin') {
   app.dock.hide()
 }
 
-let mainWindow: Electron.BrowserWindow | null
-let tray: Tray | null
+const createTray = async () => {
+  const trayPath = path.join(staticPath, 'tray/tray.png')
+  const tray = new Tray(trayPath)
+
+  const isEnabled = await autoLaunch.isEnabled()
+  // const isShow = mainWindow && mainWindow.isVisible()
+  // const isStartServer = controlServer.isStarted()
+  const menuObject: any = [
+    {
+      label: 'Project Adress',
+      click: () => {
+        shell.openExternal('https://github.com/yantze/remote-control')
+      },
+    },
+    {
+      // label: (isStartServer ? 'Stop' : 'Start') + ' Server',
+      label: 'Start Server',
+      click: () => startServer(),
+      checked: true,
+    },
+    // {
+    //   // label: (isShow ? 'Show' : 'Hide') + ' Remote Control',
+    //   label: 'Toggle Remote control',
+    //   click: toggleWindow,
+    // },
+    {
+      label: (isEnabled ? 'Stop' : 'Start') + ' at login',
+      click: async () => {
+        autoLaunch.setAutoLaunch(!isEnabled)
+      },
+    },
+    {
+      label: 'About',
+      role: 'about',
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit()
+        console.log('go to quit:')
+      },
+    },
+  ]
+  const contextMenu = Menu.buildFromTemplate(menuObject)
+  tray.setToolTip('Remote control')
+  // tray.setContextMenu(contextMenu)
+
+  tray.on('right-click', () => tray!.popUpContextMenu(contextMenu))
+  // tray.on('double-click', toggleWindow)
+  tray.on('click', event => {
+    // toggleWindow()
+
+    // Show devtools when alt clicked
+    if (mainWindow && mainWindow!.isVisible() && event.altKey) {
+      mainWindow!.webContents.openDevTools({ mode: 'detach' })
+    }
+  })
+
+  return tray
+}
+
+let mainWindow: Electron.BrowserWindow | undefined
 
 const staticPath = path.join(__dirname, isDevelopment ? '../../static' : '../static')
 
-function createWindow() {
+
+let uri: string | undefined
+if (isDevelopment) {
+  uri = `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`
+} else {
+  uri = path.resolve(__dirname, 'index.html')
+}
+
+const browserWindow = {
+  height: 311,
+  resizable: false,
+  width: 310, // titlebar height 24px
+  show: false,
+  frame: false,
+  fullscreenable: false,
+  // transparent: true,
+  skipTaskbar: true,
+  webPreferences: {
+    nodeIntegration: true,
+    enableRemoteModule: true,
+  }
+}
+
+async function init() {
+  const tray: Tray = await createTray()
+
+  const menuBarOptions = {
+    index: uri,
+    browserWindow,
+    tray,
+  }
+
+  const mb = menubar(menuBarOptions)
+
+  onWindowReady(mb)
+
+}
+
+function onWindowReady(mb: Menubar) {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
-    height: 311,
-    resizable: false,
-    width: 310, // titlebar height 24px
-    show: false,
-    frame: false,
-    fullscreenable: false,
-    // transparent: true,
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true,
-    }
-
-    // backgroundColor: '#2e2c2900',
-    // hasShadow: false,
-  })
-
-  if (isDevelopment) {
-    mainWindow!.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
-  } else {
-    mainWindow!.loadFile(path.resolve(__dirname, 'index.html'))
+  mainWindow = mb.window
+  if (!mainWindow) {
+    console.log('没有 mainWindow')
+    return
   }
 
   if (isDevelopment) {
@@ -66,7 +151,7 @@ function createWindow() {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    mainWindow = null
+    mainWindow = undefined
   })
 
   return mainWindow
@@ -84,7 +169,7 @@ app.on('window-all-closed', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  createTray()
+  init()
   autoUpdater.checkForUpdatesAndNotify()
 
   // const locale = app.getLocale()
@@ -93,7 +178,7 @@ app.on('ready', () => {
 app.on('activate', () => {
   // On OS X it"s common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  showWindow()
+  // showWindow()
 })
 
 // In this file you can include the rest of your app"s specific main process
@@ -133,102 +218,48 @@ autoUpdater.on('update-downloaded', async (data, data2) => {
   }
 })
 
-const createTray = async () => {
-  const trayPath = path.join(staticPath, 'tray/tray.png')
-  tray = new Tray(trayPath)
+// const getWindowPosition = () => {
+//   const windowBounds = mainWindow!.getBounds()
+//   const trayBounds = tray!.getBounds()
 
-  const isEnabled = await autoLaunch.isEnabled()
-  // const isShow = mainWindow && mainWindow.isVisible()
-  // const isStartServer = controlServer.isStarted()
-  const menuObject: any = [
-    {
-      label: 'Project Adress',
-      click: () => {
-        shell.openExternal('https://github.com/yantze/remote-control')
-      },
-    },
-    {
-      // label: (isStartServer ? 'Stop' : 'Start') + ' Server',
-      label: 'Start Server',
-      click: () => startServer(),
-      checked: true,
-    },
-    {
-      // label: (isShow ? 'Show' : 'Hide') + ' Remote Control',
-      label: 'Toggle Remote control',
-      click: toggleWindow,
-    },
-    {
-      label: (isEnabled ? 'Stop' : 'Start') + ' at login',
-      click: async () => {
-        autoLaunch.setAutoLaunch(!isEnabled)
-      },
-    },
-    {
-      label: 'About',
-      role: 'about',
-    },
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Quit',
-      click: () => {
-        app.quit()
-        console.log('go to quit:')
-      },
-    },
-  ]
-  const contextMenu = Menu.buildFromTemplate(menuObject)
-  tray.setToolTip('Remote control')
-  // tray.setContextMenu(contextMenu)
+//   // Center window horizontally below the tray icon
+//   const x = Math.round(trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2)
 
-  tray.on('right-click', () => tray!.popUpContextMenu(contextMenu))
-  // tray.on('double-click', toggleWindow)
-  tray.on('click', event => {
-    toggleWindow()
+//   let yOffset = 0
+//   if (process.platform != 'darwin') {
+//     yOffset = -1 * windowBounds.height
+//   } else {
+//     yOffset += trayBounds.height
+//   }
 
-    // Show devtools when alt clicked
-    if (mainWindow && mainWindow!.isVisible() && event.altKey) {
-      mainWindow!.webContents.openDevTools({ mode: 'detach' })
-    }
-  })
-}
 
-const getWindowPosition = () => {
-  const windowBounds = mainWindow!.getBounds()
-  const trayBounds = tray!.getBounds()
+//   // Position window 4 pixels vertically below the tray icon
+//   const y = Math.round(trayBounds.y + yOffset)
 
-  // Center window horizontally below the tray icon
-  const x = Math.round(trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2)
+//   return { x, y }
+// }
 
-  // Position window 4 pixels vertically below the tray icon
-  const y = Math.round(trayBounds.y + trayBounds.height)
+// const showWindow = () => {
+//   if (!mainWindow) {
+//     mainWindow = createWindow()
+//   }
 
-  return { x, y }
-}
+//   const position = getWindowPosition()
+//   mainWindow!.setPosition(position.x, position.y, false)
+//   mainWindow!.show()
+//   mainWindow!.focus()
+// }
 
-const showWindow = () => {
-  if (!mainWindow) {
-    mainWindow = createWindow()
-  }
+// const toggleWindow = () => {
+//   if (!mainWindow || !mainWindow.isVisible()) {
+//     setTimeout(() => {
+//       showWindow()
+//     })
+//     return
+//   }
 
-  const position = getWindowPosition()
-  mainWindow!.setPosition(position.x, position.y, false)
-  mainWindow!.show()
-  mainWindow!.focus()
-}
-
-const toggleWindow = () => {
-  if (!mainWindow || !mainWindow.isVisible()) {
-    setTimeout(() => {
-      showWindow()
-    })
-    return
-  }
-
-  return mainWindow.hide()
-}
+//   return mainWindow.hide()
+// }
 
 const startServer = () => {
   mainWindow!.webContents.send('operate-server', { set: 'start' })
