@@ -78,7 +78,8 @@
         "mac": {
             "category": "public.app-category.utilities",
             "target": [
-                "zip"
+                "zip",
+                "dmg"
             ]
         },
         "dmg": {
