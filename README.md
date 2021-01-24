@@ -14,12 +14,7 @@ For chinese user: http://remote.qingrizhi.com
 git clone https://github.com/yantze/remote-control
 
 cd remote-control
-git submodule update --init --recursive
 npm i
-
-cd ./vendor/remote-control-server
-npm i
-npm run build
 
 cd ../..
 npm run dev

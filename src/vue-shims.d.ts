@@ -3,7 +3,7 @@ declare module '*.vue' {
   export default Vue
 }
 
-declare module 'remote-control-server' {
+declare module '@vastiny/remote-control-server' {
   function start(obj: any): any
   // interface instanceServer {
   // }

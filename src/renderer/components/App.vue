@@ -12,11 +12,11 @@
       <div v-if="showMain" id="main">
         <div>
           <h1 id="title">
-            <img src="../../../static/images/headline-remote-control.svg" alt="Remote Control">
+            <img :src="descImg" alt="Remote Control" />
           </h1>
           <div id="description">
             {{ $t('Remote control in the browser') }}
-            <!-- <img src="../../../static/images/description.svg" :alt="$t('remote control')"> -->
+            <!-- <img src="../../static/images/description.svg" :alt="$t('remote control')"> -->
           </div>
         </div>
         <div id="server-button-group" class="flex-center">
@@ -24,7 +24,7 @@
         </div>
 
         <div id="copyright">
-          <a href="#" @click="openExternal(tutorialURL)">{{$t("Tutorial") }}</a>
+          <a href="#" @click="openExternal(tutorialURL)">{{ $t('Tutorial') }}</a>
           ©Yantze
         </div>
       </div>
@@ -35,11 +35,11 @@
           <!-- <img src="../../../static/images/qrcode-description.svg" :alt="$t('Scan the QR code or enter the URL below in your mobile browser')"> -->
         </div>
         <div id="qrcode" class="d-flex overflow-auto">
-          <img :src="qrimg" class="qrcode" alt v-for="(qrimg, $index) in qrimgs" :key="$index">
+          <img :src="qrimg" class="qrcode" alt v-for="(qrimg, $index) in qrimgs" :key="$index" />
         </div>
         <ul id="url-list">
           <li class="url-text" v-for="(url, key) in supportAddress" :key="key">
-            <a href="#" @click="openExternal(url)">{{url}}</a>
+            <a href="#" @click="openExternal(url)">{{ url }}</a>
           </li>
         </ul>
         <button id="server-stop-button" class="button" @click="stopServer">{{ $t('Stop') }}</button>
@@ -54,7 +54,7 @@
 import { networkInterfaces, hostname } from 'os'
 import net from 'net'
 
-// import * as path from "path";
+import * as path from "path";
 import { fork, ChildProcess, ForkOptions } from 'child_process'
 
 import Vue from 'vue'
@@ -65,7 +65,7 @@ import Store from '../../common/store'
 
 import { SERVER_STATUS, KEY_SERVER_STATUS } from '../../common/constant'
 
-import * as server from 'remote-control-server'
+import * as server from '@vastiny/remote-control-server'
 
 import { shell, ipcRenderer } from 'electron'
 
@@ -82,6 +82,10 @@ let forkServer
 // }
 
 const tutorialURL = 'https://vastiny.com/post/remote-control'
+
+const isDevelopment = process.env.NODE_ENV !== 'production'
+
+const staticPath = path.join(isDevelopment ? '../static' : 'dist/static')
 
 export default Vue.extend({
   data() {
@@ -106,6 +110,9 @@ export default Vue.extend({
     showMain() {
       return this.serverStatus === SERVER_STATUS.STOPPED
     },
+    descImg() {
+      return path.resolve(staticPath , "images/headline-remote-control.svg")
+    },
   },
   watch: {
     serverStatus: (val, oldVal) => {
@@ -113,28 +120,9 @@ export default Vue.extend({
     },
   },
   methods: {
-    createProc() {
-      forkServer = fork('./src/renderer/utils/external-server.js', [], {
-        detached: true,
-      })
-
-      forkServer.on('data', msg => {
-        console.log('Message from child', msg)
-      })
-      forkServer.on('error', err => {
-        console.log('failed to start process', err)
-      })
-      forkServer.on('exit', (code, signal) => {
-        console.log(`child process exited with code ${code}, signal: ${signal}`)
-      })
-
-      forkServer.unref()
-    },
-
     startServer() {
       if (this.serverStatus !== SERVER_STATUS.STARTED) {
         console.log('start server...')
-        // this.createProc()
         this.instanceServer = server.start({ port: 3399 })
         this.serverStatus = SERVER_STATUS.STARTED
         this.showQRCode()
@@ -196,67 +184,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-html {
-  // background-color: #ececec;
-  -webkit-font-smoothing: antialiased;
-  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, PingFang SC, Lantinghei SC, -apple-system,
-    Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
-  font-size: 16px;
-
-  body {
-    margin: 0;
-  }
-}
-
-.content {
-  background-color: #ececec;
-  overflow: hidden;
-  height: 309px;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.button {
-  font-size: 100%;
-  padding: 0.4em 1em;
-  color: white;
-  border: transparent;
-  background-color: #4c98fe;
-  text-decoration: none;
-  border-radius: 2px;
-  display: inline-block;
-  white-space: nowrap;
-  vertical-align: middle;
-  text-align: center;
-  cursor: pointer;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  box-sizing: border-box;
-  line-height: normal;
-  letter-spacing: 0.01em;
-}
-
-.button:hover,
-.button:focus {
-  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
-  outline: none;
-}
-
-.button:active {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 6px rgba(0, 0, 0, 0.2) inset;
-  background-color: #247eff;
-}
-</style>
-
-<style lang="scss" scoped>
 // $imgs: "../../../static/";
 
 /* The arrow at the top of the window */
@@ -271,99 +198,4 @@ html {
 //   background-color: #e8e6e8;
 // }
 
-#tray-arrow svg {
-  fill: #ececec;
-}
-
-#qrcode {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  overflow-x: auto;
-  width: 100%;
-  padding: 10px;
-}
-
-.qrcode {
-  width: 80px;
-  height: 80px;
-  display: inline-block;
-  padding: 0 10px 0 10px;
-}
-
-#title {
-  font-family: 'SF Pro Display';
-  font-size: 36px;
-  color: #363535;
-  text-align: center;
-  line-height: 40px;
-  font-weight: 300;
-
-  img {
-    width: 180px;
-  }
-}
-
-// #title strong {
-
-// }
-
-#description {
-  font-family: 'SF Pro Display';
-  font-size: 17px;
-  color: #505050;
-  text-align: center;
-  line-height: 25px;
-  font-weight: 300;
-}
-
-#title {
-  padding-top: 45px;
-  padding-bottom: 15px;
-  margin: 0;
-}
-#description img {
-  // background-image: url($imgs+"images/Remote Control@2x.png");
-  height: 18px;
-}
-
-#server-button-group {
-  height: 170px;
-}
-
-#ready {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  #qrcode-description {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    // line-height: 28px;
-    text-align: center;
-    max-width: 350px;
-  }
-
-  // #server-stop-button {
-  // }
-
-  #url-list {
-    font-size: 14px;
-    color: #696969;
-    padding-left: 0;
-    overflow-x: auto;
-
-    .url-text {
-      padding-bottom: 5px;
-    }
-  }
-}
-
-#copyright {
-  color: gray;
-  font-size: 12px;
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-}
 </style>

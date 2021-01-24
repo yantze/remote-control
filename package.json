@@ -1,12 +1,12 @@
 {
     "name": "remote-control",
-    "version": "1.2.6",
+    "version": "1.2.7",
     "description": "Remote Control as your keyboard and trackpad.",
     "scripts": {
         "dev": "electron-webpack dev",
         "build": "electron-webpack build",
         "lint": "tslint -c tslint.json -p tsconfig.json",
-        "start": "npm run build && electron ./dist/main.js",
+        "start": "npm run build && electron ./dist/main/main.js",
         "compile": "electron-webpack",
         "rebuild": "npm rebuild --runtime=electron --target=10.2.0 --disturl=https://electronjs.org/headers",
         "dist": "npm run compile --production && electron-builder --x64",
@@ -27,6 +27,7 @@
         "@types/i18next": "^11.9.0",
         "@types/qrcode": "^1.2.0",
         "babel-loader": "^8.0.0",
+        "cross-env": "^7.0.3",
         "css-loader": "^1.0.0",
         "electron": "10.3.0",
         "electron-builder": "^22.9.1",
@@ -46,7 +47,7 @@
     "dependencies": {
         "@panter/vue-i18next": "^0.13.0",
         "@types/auto-launch": "^5.0.0",
-        "@vastiny/remote-control-server": "^2.0.2",
+        "@vastiny/remote-control-server": "^2.0.3",
         "auto-launch": "^5.0.5",
         "conf": "^2.0.0",
         "electron-fetch": "^1.2.1",
@@ -55,13 +56,16 @@
         "source-map-support": "^0.5.9"
     },
     "electronWebpack": {
-        "title": "Remote Control"
+        "title": "Remote Control",
+        "renderer": {
+            "template": "src/renderer/index.html"
+        }
     },
     "build": {
         "appId": "com.vastiny.remote.app",
         "productName": "Remote Control",
         "copyright": "Copyright (c) yantze All rights reserved.",
-        "asar": true,
+        "asar": false,
         "npmRebuild": false,
         "nodeGypRebuild": false,
         "publish": [

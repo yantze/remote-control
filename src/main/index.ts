@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog, Tray, Menu, shell } from 'electron'
 import * as path from 'path'
-import { format as formatUrl } from 'url'
+// import { format as formatUrl } from 'url'
 import { autoUpdater } from 'electron-updater'
 import autoLaunch from './auto-launch'
 // import controlServer from './control-server'
@@ -11,6 +11,8 @@ if (isDevelopment) {
   app.commandLine.appendSwitch('remote-debugging-port', '9223')
 }
 
+app.allowRendererProcessReuse = false
+
 if (process.platform === 'darwin') {
   app.dock.hide()
 }
@@ -18,7 +20,7 @@ if (process.platform === 'darwin') {
 let mainWindow: Electron.BrowserWindow | null
 let tray: Tray | null
 
-const staticPath = path.join(__dirname, '../../static')
+const staticPath = path.join(__dirname, isDevelopment ? '../../static' : '../static')
 
 function createWindow() {
   // Create the browser window.
@@ -26,11 +28,12 @@ function createWindow() {
     height: 321,
     resizable: false,
     width: 310, // titlebar height 24px
-    show: false,
-    frame: false,
+    // show: false,
+    // frame: false,
     fullscreenable: false,
-    transparent: true,
+    // transparent: true,
     webPreferences: {
+      nodeIntegration: true,
       enableRemoteModule: true,
     }
 
@@ -41,17 +44,11 @@ function createWindow() {
   if (isDevelopment) {
     mainWindow!.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
-    mainWindow!.loadURL(
-      formatUrl({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file',
-        slashes: true,
-      }),
-    )
+    mainWindow!.loadFile(path.resolve(__dirname, '../renderer/index.html'))
   }
 
   if (isDevelopment) {
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
   }
 
   mainWindow!.webContents.on('devtools-opened', () => {
@@ -62,7 +59,7 @@ function createWindow() {
   })
 
   // Close window only hide it.
-  mainWindow!.on('close', event => {})
+  mainWindow!.on('close', event => { })
 
   // Emitted when the window is closed.
   mainWindow!.on('closed', () => {
@@ -85,8 +82,8 @@ app.on('window-all-closed', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  createTray()
   createWindow()
+  createTray()
   autoUpdater.checkForUpdatesAndNotify()
 
   // const locale = app.getLocale()
@@ -138,7 +135,8 @@ autoUpdater.on('update-downloaded', async (data, data2) => {
 })
 
 const createTray = async () => {
-  tray = new Tray(path.join(staticPath, 'tray/tray.png'))
+  const trayPath = path.join(staticPath, 'tray/tray.png')
+  tray = new Tray(trayPath)
 
   const isEnabled = await autoLaunch.isEnabled()
   // const isShow = mainWindow && mainWindow.isVisible()
@@ -220,7 +218,8 @@ const showWindow = () => {
 
 const toggleWindow = () => {
   setTimeout(() => {
-    mainWindow && mainWindow.isVisible() ? mainWindow.hide() : showWindow()
+    showWindow()
+    // mainWindow && mainWindow.isVisible() ? mainWindow.hide() : showWindow()
   })
 }
 

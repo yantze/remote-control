@@ -1,5 +1,5 @@
 import net from 'net'
-import coreServer from 'remote-control-server'
+import coreServer from '@vastiny/remote-control-server'
 import { SERVER_STATUS } from '../common/constant'
 
 class ControlServer {
